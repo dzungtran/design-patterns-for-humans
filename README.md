@@ -9,14 +9,11 @@
 A topic that can easily make anyone's mind wobble. Here I try to make them stick in to your mind (and maybe mine) by explaining them in the <i>simplest</i> way possible.
 </p>
 
-
 ***
 
-<p align="center"><b> Want to learn something new?</b><br>Visit <a href="http://hugobots.com">Hugobots</a> where I teach people</p>
+<sub>Check out my [blog](http://kamranahmed.info) and say "hi" on [Twitter](https://twitter.com/kamranahmedse).</sub>
 
-***
-
-🚀 Introduction
+Introduction
 =================
 
 Design patterns are solutions to recurring problems; **guidelines on how to tackle certain problems**. They are not classes, packages or libraries that you can plug into your application and wait for the magic to happen. These are, rather, guidelines on how to tackle certain problems in certain situations.
@@ -30,10 +27,11 @@ Wikipedia describes them as
 ⚠️ Be Careful
 -----------------
 - Design patterns are not a silver bullet to all your problems.
-- Do not try to force them; bad things are supposed to happen, if done so. Keep in mind that design patterns are solutions **to** problems, not solutions **finding** problems; so don't overthink.
+- Do not try to force them; bad things are supposed to happen, if done so. 
+- Keep in mind that design patterns are solutions **to** problems, not solutions **finding** problems; so don't overthink.
 - If used in a correct place in a correct manner, they can prove to be a savior; or else they can result in a horrible mess of a code.
 
-> Also note that the code samples below are in PHP-7, however this shouldn't stop you because the concepts are same anyways. Plus the **support for other languages is underway**.
+> Also note that the code samples below are in PHP-7, however this shouldn't stop you because the concepts are same anyways.
 
 Types of Design Patterns
 -----------------
@@ -61,7 +59,7 @@ Wikipedia says
 🏠 Simple Factory
 --------------
 Real world example
-> Consider, you are building a house and you need doors. It would be a mess if every time you need a door, you put on your carpenter clothes and start making a door in your house. Instead you get it made from a factory.
+> Consider, you are building a house and you need doors. You can either put on your carpenter clothes, bring some wood, glue, nails and all the tools required to build the door and start building it in your house or you can simply call the factory and get the built door delivered to you so that you don't need to learn anything about the door making or to deal with the mess that comes with making it.
 
 In plain words
 > Simple factory simply generates an instance for client without exposing any instantiation logic to the client
@@ -113,9 +111,14 @@ class DoorFactory
 ```
 And then it can be used as
 ```php
+// Make me a door of 100x200
 $door = DoorFactory::makeDoor(100, 200);
+
 echo 'Width: ' . $door->getWidth();
 echo 'Height: ' . $door->getHeight();
+
+// Make me a door of 50x100
+$door2 = DoorFactory::makeDoor(50, 100);
 ```
 
 **When to Use?**
@@ -168,7 +171,7 @@ abstract class HiringManager
 {
 
     // Factory method
-    abstract public function makeInterviewer(): Interviewer;
+    abstract protected function makeInterviewer(): Interviewer;
 
     public function takeInterview()
     {
@@ -182,7 +185,7 @@ Now any child can extend it and provide the required interviewer
 ```php
 class DevelopmentManager extends HiringManager
 {
-    public function makeInterviewer(): Interviewer
+    protected function makeInterviewer(): Interviewer
     {
         return new Developer();
     }
@@ -190,7 +193,7 @@ class DevelopmentManager extends HiringManager
 
 class MarketingManager extends HiringManager
 {
-    public function makeInterviewer(): Interviewer
+    protected function makeInterviewer(): Interviewer
     {
         return new CommunityExecutive();
     }
@@ -522,7 +525,7 @@ In plain words
 Wikipedia says
 > In software engineering, the singleton pattern is a software design pattern that restricts the instantiation of a class to one object. This is useful when exactly one object is needed to coordinate actions across the system.
 
-Singleton pattern is actually considered an anti-pattern and overuse of it should be avoided. It is not necessarily bad and could have some valid use-cases but should be used with caution because it introduces a global state in your application and change to it in one place could affect in the other areas and it could become pretty difficult to debug. The other bad thing about them is it makes your code tightly coupled plus it mocking the singleton could be difficult.
+Singleton pattern is actually considered an anti-pattern and overuse of it should be avoided. It is not necessarily bad and could have some valid use-cases but should be used with caution because it introduces a global state in your application and change to it in one place could affect in the other areas and it could become pretty difficult to debug. The other bad thing about them is it makes your code tightly coupled plus mocking the singleton could be difficult.
 
 **Programmatic Example**
 
@@ -626,6 +629,7 @@ class Hunter
 {
     public function hunt(Lion $lion)
     {
+        $lion->roar();
     }
 }
 ```
@@ -792,7 +796,8 @@ class Developer implements Employee
 {
     protected $salary;
     protected $name;
-
+    protected $roles;
+    
     public function __construct(string $name, float $salary)
     {
         $this->name = $name;
@@ -824,6 +829,7 @@ class Designer implements Employee
 {
     protected $salary;
     protected $name;
+    protected $roles;
 
     public function __construct(string $name, float $salary)
     {
@@ -890,7 +896,7 @@ $organization = new Organization();
 $organization->addEmployee($john);
 $organization->addEmployee($jane);
 
-echo "Net salaries: " . $organization->getNetSalaries(); // Net Salaries: 22000
+echo "Net salaries: " . $organization->getNetSalaries(); // Net Salaries: 27000
 ```
 
 ☕ Decorator
@@ -1220,7 +1226,7 @@ class LabDoor implements Door
 ```
 Then we have a proxy to secure any doors that we want
 ```php
-class Security
+class SecuredDoor
 {
     protected $door;
 
@@ -1251,7 +1257,7 @@ class Security
 ```
 And here is how it can be used
 ```php
-$door = new Security(new LabDoor());
+$door = new SecuredDoor(new LabDoor());
 $door->open('invalid'); // Big no! It ain't possible.
 
 $door->open('$ecr@t'); // Opening lab door
@@ -1386,7 +1392,7 @@ $bank->pay(259);
 -------
 
 Real world example
-> A generic example would be you ordering a food at restaurant. You (i.e. `Client`) ask the waiter (i.e. `Invoker`) to bring some food (i.e. `Command`) and waiter simply forwards the request to Chef (i.e. `Receiver`) who has the knowledge of what and how to cook.
+> A generic example would be you ordering food at a restaurant. You (i.e. `Client`) ask the waiter (i.e. `Invoker`) to bring some food (i.e. `Command`) and waiter simply forwards the request to Chef (i.e. `Receiver`) who has the knowledge of what and how to cook.
 > Another example would be you (i.e. `Client`) switching on (i.e. `Command`) the television (i.e. `Receiver`) using a remote control (`Invoker`).
 
 In plain words
@@ -1813,7 +1819,7 @@ class JobSeeker implements Observer
 ```
 Then we have our job postings to which the job seekers will subscribe
 ```php
-class JobPostings implements Observable
+class EmploymentAgency implements Observable
 {
     protected $observers = [];
 
@@ -1842,7 +1848,7 @@ $johnDoe = new JobSeeker('John Doe');
 $janeDoe = new JobSeeker('Jane Doe');
 
 // Create publisher and attach subscribers
-$jobPostings = new JobPostings();
+$jobPostings = new EmploymentAgency();
 $jobPostings->attach($johnDoe);
 $jobPostings->attach($janeDoe);
 
@@ -2106,7 +2112,7 @@ class LowerCase implements WritingState
     }
 }
 
-class Default implements WritingState
+class DefaultText implements WritingState
 {
     public function write(string $words)
     {
@@ -2138,7 +2144,7 @@ class TextEditor
 ```
 And then it can be used as
 ```php
-$editor = new TextEditor(new Default());
+$editor = new TextEditor(new DefaultText());
 
 $editor->type('First line');
 
@@ -2283,7 +2289,8 @@ And that about wraps it up. I will continue to improve this, so you might want t
 - Report issues
 - Open pull request with improvements
 - Spread the word
-- Reach out to me directly at kamranahmed.se@gmail.com or on twitter [@kamranahmedse](http://twitter.com/kamranahmedse)
+- Reach out with any feedback [![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/kamranahmedse.svg?style=social&label=Follow%20%40kamranahmedse)](https://twitter.com/kamranahmedse)
 
 ## License
-MIT © [Kamran Ahmed](http://kamranahmed.info)
+
+[![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
